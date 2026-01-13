@@ -5,12 +5,12 @@ Thank you for your interest in contributing! This project aims to make file orga
 ## Ways to Contribute
 
 ### Report Bugs
-- Use the [Bug Report template](https://github.com/smithjoshua/downloads-organizer/issues/new?template=bug_report.md)
+- Use the [Bug Report template](https://github.com/smithjoshua/claude-code-cowork-skills-file-organizer/issues/new?template=bug_report.md)
 - Include which environment you're using (Cowork or Claude Code)
 - Describe file types involved, not actual file names
 
 ### Suggest Features
-- Use the [Feature Request template](https://github.com/smithjoshua/downloads-organizer/issues/new?template=feature_request.md)
+- Use the [Feature Request template](https://github.com/smithjoshua/claude-code-cowork-skills-file-organizer/issues/new?template=feature_request.md)
 - Explain your use case
 - Consider how it fits with the project's safety-first philosophy
 
@@ -50,4 +50,4 @@ This project follows strict safety guidelines:
 
 ## Questions?
 
-Open a [Discussion](https://github.com/smithjoshua/downloads-organizer/discussions) for questions or ideas.
+Open a [Discussion](https://github.com/smithjoshua/claude-code-cowork-skills-file-organizer/discussions) for questions or ideas.

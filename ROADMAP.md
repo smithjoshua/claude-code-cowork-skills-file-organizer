@@ -37,4 +37,4 @@
 
 ---
 
-Have ideas? Open a [feature request](https://github.com/smithjoshua/downloads-organizer/issues/new?template=feature_request.md) or start a [discussion](https://github.com/smithjoshua/downloads-organizer/discussions).
+Have ideas? Open a [feature request](https://github.com/smithjoshua/claude-code-cowork-skills-file-organizer/issues/new?template=feature_request.md) or start a [discussion](https://github.com/smithjoshua/claude-code-cowork-skills-file-organizer/discussions).

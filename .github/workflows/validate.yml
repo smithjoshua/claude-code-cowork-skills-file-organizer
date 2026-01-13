@@ -1,0 +1,31 @@
+name: Validate Skills
+
+on: [push, pull_request]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate SKILL.md frontmatter
+        run: |
+          for skill in cowork-skill claude-code-skill; do
+            if ! head -1 $skill/SKILL.md | grep -q "^---"; then
+              echo "Missing frontmatter in $skill"
+              exit 1
+            fi
+          done
+          echo "All skills valid"
+
+      - name: Check required files exist
+        run: |
+          for skill in cowork-skill claude-code-skill; do
+            for file in SKILL.md README.md; do
+              if [ ! -f "$skill/$file" ]; then
+                echo "Missing $file in $skill"
+                exit 1
+              fi
+            done
+          done
+          echo "All required files present"

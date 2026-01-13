@@ -1,23 +1,40 @@
 # File Organizer Skills for Claude Code & Cowork
 
-> AI-powered file organization skills for Claude. Smart categorization, intelligent renaming, and complete audit trails for any directory.
+> AI-powered file organization using the **PARA method** from "Building a Second Brain." Intelligent categorization into Projects, Areas, Resources, and Archive with inbox workflow.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Claude Code](https://img.shields.io/badge/Claude_Code-Compatible-blue)](https://docs.anthropic.com/en/docs/claude-code)
 [![Cowork](https://img.shields.io/badge/Cowork-Compatible-blueviolet)](https://claude.ai)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+[![PARA Method](https://img.shields.io/badge/PARA-Second_Brain-orange)](https://fortelabs.com/blog/para/)
 
 ## What Is This?
 
-This repository contains **skills** (reusable instruction sets) that teach Claude how to organize files intelligently. Point Claude at any messy directory and it will:
+This repository contains **skills** (reusable instruction sets) that teach Claude how to organize files using the PARA methodology. Point Claude at any messy directory and it will:
 
-- Analyze and categorize files by content, not just extension
+- Categorize files into Projects, Areas, Resources, and Archive
 - Propose smart renames for `Document(3).pdf` and `IMG_1234.jpg`
-- Create an organized folder structure
-- Move files with your approval
+- Guide you through daily/weekly inbox reviews
 - Keep a complete audit trail for rollback
 
 **Works on any directory** - Downloads, Desktop, project folders, or anywhere files accumulate.
+
+---
+
+## What is PARA?
+
+PARA is an organizational system from [Building a Second Brain](https://www.buildingasecondbrain.com/) by Tiago Forte:
+
+| # | Category | Contains | Lifespan |
+|---|----------|----------|----------|
+| 0 | **Inbox** | New files awaiting processing | Temporary |
+| 1 | **Projects** | Active work with deadlines | Short-term |
+| 2 | **Areas** | Ongoing responsibilities | Long-term |
+| 3 | **Resources** | Reference materials by topic | Evergreen |
+| 4 | **Archive** | Inactive/completed items | Preserved |
+
+[Full PARA methodology guide →](docs/PARA-GUIDE.md)
+
+---
 
 ## Two Skills, One Goal
 
@@ -27,29 +44,21 @@ This repository contains **skills** (reusable instruction sets) that teach Claud
 | **Best For** | Developers, power users | General users |
 | **Interface** | Bash commands | Conversational |
 | **Installation** | `~/.claude/skills/` | `.skills/skills/` |
-| **Invocation** | "Organize my files" | "Organize my downloads" |
 
 ### Claude Code Skill
 
-For users of [Claude Code](https://docs.anthropic.com/en/docs/claude-code) - Anthropic's CLI tool. Uses bash commands (`mv`, `find`, `mkdir`) directly in your terminal.
+For users of [Claude Code](https://docs.anthropic.com/en/docs/claude-code) - Anthropic's CLI tool.
 
 ```bash
 # Install
 git clone https://github.com/smithjoshua/claude-code-cowork-skills-file-organizer.git
 cp -r claude-code-cowork-skills-file-organizer/claude-code-skill ~/.claude/skills/file-organizer
 
-# Use in Claude Code
+# Use
 claude
-> Organize my ~/Downloads folder
-> Clean up ~/Desktop
-> Sort the files in ~/Projects/old-stuff
+> Organize my ~/Downloads folder using PARA
+> Help me do a weekly review
 ```
-
-**Key Features:**
-- Direct bash command execution
-- Works on any directory you specify
-- Detailed logging with timestamps
-- Content analysis via `pdftotext`, `exiftool`, `strings`
 
 [Full Claude Code skill documentation →](claude-code-skill/README.md)
 
@@ -57,7 +66,7 @@ claude
 
 ### Cowork Skill
 
-For users of **Cowork** (Claude Desktop). Conversational interface with guided approval checkpoints.
+For users of **Cowork** (Claude Desktop).
 
 ```bash
 # Install
@@ -65,106 +74,112 @@ git clone https://github.com/smithjoshua/claude-code-cowork-skills-file-organize
 cp -r claude-code-cowork-skills-file-organizer/cowork-skill ~/.skills/skills/file-organizer
 
 # Use in Cowork
-# Just say: "Organize my downloads" or "Clean up my files"
+# "Organize my downloads with PARA"
+# "Help me process my inbox"
 ```
-
-**Key Features:**
-- Guided conversational workflow
-- Visual approval checkpoints
-- Step-by-step progress updates
-- Great for first-time users
 
 [Full Cowork skill documentation →](cowork-skill/README.md)
 
 ---
 
-## How It Works
+## Folder Structure (PARA Method)
 
-```
-1. SCAN      → Claude analyzes the target directory
-2. CATEGORIZE → Files grouped by type, project, or content
-3. PROPOSE   → You see a plan before anything moves
-4. APPROVE   → Nothing happens without your OK
-5. EXECUTE   → Files renamed and organized
-6. LOG       → Complete audit trail for rollback
-```
-
-## Folder Structure (Default)
-
-Both skills create this structure (customizable):
+Both skills create this structure:
 
 ```
 Target-Directory/
-├── WORK/                    # Professional files
-│   ├── Projects/
-│   ├── Clients/
-│   └── _Archive/
-├── DOCUMENTS/               # General documents
-│   ├── Financial/
-│   ├── Legal/
-│   └── Credentials/
-├── PERSONAL/                # Personal files
-├── MEDIA/                   # Images, videos, audio
-│   ├── Screenshots/
-│   └── Photos/
-├── SOFTWARE/                # Installers, apps
-├── REFERENCE/               # Articles, books, courses
-├── _REVIEW/                 # Files needing manual attention
+├── 0-Inbox/                 # New files awaiting processing
+│   └── _REVIEW/             # Files needing manual attention
+├── 1-Projects/              # Active work with deadlines
+│   ├── Work/
+│   └── Personal/
+├── 2-Areas/                 # Ongoing responsibilities
+│   ├── Finance/
+│   ├── Health/
+│   └── Legal/
+├── 3-Resources/             # Reference materials by topic
+│   ├── Media/               # Images, videos, audio
+│   ├── Tools/               # Software, installers
+│   └── Learning/            # Articles, books, courses
+├── 4-Archive/               # Inactive/completed items
 └── _ORG/                    # Tracking files (log, manifest)
 ```
 
+---
+
+## Inbox Workflow
+
+The key to PARA is regular inbox processing. New files land in `0-Inbox/` and get sorted during review sessions.
+
+### Daily Review (5 min)
+
+For each file in `0-Inbox/`, ask:
+
+```
+Is this actionable?        → 1-Projects
+Ongoing responsibility?    → 2-Areas
+Reference material?        → 3-Resources
+Completed/inactive?        → 4-Archive
+None of the above?         → Delete
+```
+
+### Weekly Review (15 min)
+
+1. Clear remaining inbox items
+2. Archive completed projects
+3. Review areas for relevance
+4. Clean up resource duplicates
+
+---
+
 ## File Naming Convention
 
-**Format:** `YYYY-MM_PROJECT_description.ext`
+**Format:** `YYYY-MM_CODE_description.ext`
 
 | Before | After |
 |--------|-------|
-| `Document (3).pdf` | `2025-01_ACME_quarterly-report.pdf` |
-| `IMG_1234.jpg` | `2025-01_PERS_vacation-beach.jpg` |
-| `Screenshot 2025-01-13...` | `2025-01-13_WORK_meeting-notes.png` |
+| `Document (3).pdf` | `2025-01_FIN_quarterly-report.pdf` |
+| `IMG_1234.jpg` | `2025-01_REF_vacation-beach.jpg` |
+| `Screenshot 2025-01-13...` | `2025-01-13_PROJ_meeting-notes.png` |
+
+---
 
 ## Safety First
 
 - **Never deletes files** - only moves them
 - **Approval required** - for all renames and sensitive files
 - **Complete audit trail** - undo any operation via `_ORG/_MANIFEST.md`
-- **Uncertain files** - go to `_REVIEW/` for manual sorting
+- **Uncertain files** - go to `0-Inbox/_REVIEW/` for manual sorting
 - **Sensitive detection** - flags financial, medical, legal docs
+
+---
 
 ## Customization
 
 ### Preset Templates
 
-Choose a starting point in [`/templates`](templates/):
+All templates use the PARA methodology. Choose a starting point in [`/templates`](templates/):
 
-| Template | Best For |
-|----------|----------|
-| [freelancer.md](templates/freelancer.md) | Client-based work |
-| [developer.md](templates/developer.md) | Software projects |
-| [student.md](templates/student.md) | Course materials |
-| [creative.md](templates/creative.md) | Design assets |
-| [family.md](templates/family.md) | Shared family files |
-| [minimalist.md](templates/minimalist.md) | Simple 5-folder structure |
+| Template | Best For | PARA Focus |
+|----------|----------|------------|
+| [minimalist.md](templates/minimalist.md) | Simple organization | Pure 5-folder PARA |
+| [freelancer.md](templates/freelancer.md) | Consultants | Projects by client |
+| [developer.md](templates/developer.md) | Software engineers | Dev resources |
+| [student.md](templates/student.md) | Students | Projects by course |
+| [creative.md](templates/creative.md) | Designers | Rich media library |
+| [family.md](templates/family.md) | Households | Area responsibilities |
 
 ### Custom Configuration
 
 Edit `references/config.md` in your installed skill to define:
-- Your folder structure
-- Project/client codes (e.g., `ACME`, `PROJ1`)
+- Your PARA folder structure
+- Project/client codes
 - Detection keywords for auto-categorization
+- Inbox workflow prompts
 
 [Full customization guide →](docs/CUSTOMIZATION.md)
 
-## Quick Comparison
-
-| Feature | Claude Code | Cowork |
-|---------|-------------|--------|
-| Direct bash access | Yes | No |
-| Works on any path | Yes | Yes |
-| Approval checkpoints | Yes | Yes |
-| Audit trail | Yes | Yes |
-| Content analysis | Via CLI tools | Built-in |
-| Best for | Technical users | Everyone |
+---
 
 ## Requirements
 
@@ -177,15 +192,19 @@ Edit `references/config.md` in your installed skill to define:
 - [Claude Desktop](https://claude.ai/download) with Cowork enabled
 - Skills folder configured
 
+---
+
 ## Contributing
 
 Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 **Ideas:**
-- Additional folder templates
+- Additional PARA templates
 - Language/locale support
 - Cloud storage integration
 - Enhanced content analysis
+
+---
 
 ## Roadmap
 
@@ -195,6 +214,12 @@ See [ROADMAP.md](ROADMAP.md) for planned features including:
 - Scheduled organization
 - Custom rules engine
 
+---
+
+## About PARA
+
+This project implements the **PARA Method** from [Building a Second Brain](https://www.buildingasecondbrain.com/) by Tiago Forte. PARA (Projects, Areas, Resources, Archive) is a universal organizational system used by thousands for personal knowledge management (PKM).
+
 ## License
 
 MIT License - see [LICENSE](LICENSE)
@@ -203,4 +228,4 @@ MIT License - see [LICENSE](LICENSE)
 
 **Built for the Claude AI ecosystem by [Joshua Smith](https://github.com/smithjoshua)**
 
-**If this helped you, please star the repo!**
+**If this helped you build your second brain, please star the repo!**

@@ -20,6 +20,18 @@ This repository contains **skills** (reusable instruction sets) that teach Claud
 
 ---
 
+## Why I Built This
+
+Like most people, my Downloads folder had become a graveyard of forgotten files - `Document (3).pdf`, `IMG_1234.jpg`, `Screenshot 2024-01-15...`. I tried manual cleanup (never finished), traditional organizers (couldn't understand context), and AI assistants (couldn't access my actual files).
+
+**The problem?** Every tool treated organization as one-size-fits-all. But my files aren't generic - client projects, personal receipts, research articles, and family photos all mixed together.
+
+**The solution:** An AI agent that learns *your* structure, reads file contents to understand what they actually are, asks before acting, and keeps complete logs. In my first run, it organized 81 files in 45 minutes - finding forgotten flight receipts, surfacing an investor deck hiding as a screenshot, and flagging duplicates.
+
+[Read the full story →](docs/STORY.md)
+
+---
+
 ## What is PARA?
 
 PARA is an organizational system from [Building a Second Brain](https://www.buildingasecondbrain.com/) by Tiago Forte:

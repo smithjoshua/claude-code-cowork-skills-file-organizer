@@ -21,10 +21,29 @@ Organizes files using the PARA methodology with bash commands. Intelligent categ
 
 ```
 Phase 1: Discovery     → ls, find, file commands to scan and assess
-Phase 2: Analysis      → Read file contents for poor names (pdftotext, etc.)
-Phase 3: Preparation   → mkdir -p to create PARA structure, get approval
-Phase 4: Execution     → mv commands with logging
-Phase 5: Completion    → Generate summary, prompt inbox review
+Phase 2: Analysis      → Read file contents for poor names (use Read tool for PDFs)
+Phase 3: Triage        → Create categorization table, flag sensitive/scam files
+Phase 4: Preparation   → mkdir -p to create PARA structure, get approval
+Phase 5: Execution     → mv commands with logging
+Phase 6: Cleanup       → Remove empty folders, delete temp files
+Phase 7: Completion    → Generate summary, verify PARA folder roots are clean
+```
+
+### 0-Review Staging Workflow
+
+For large batches of poorly-named files, use a staging folder:
+
+```bash
+# Create staging folder for files needing content analysis
+mkdir -p ~/Downloads/0-Review
+
+# Move cryptic/poorly-named files to review
+mv ~/Downloads/U0BPA6*.pdf ~/Downloads/0-Review/
+mv ~/Downloads/[0-9][0-9][0-9][0-9][0-9].pdf ~/Downloads/0-Review/
+
+# Analyze each file, then move to proper PARA location
+# Remove staging folder when empty
+rmdir ~/Downloads/0-Review
 ```
 
 ## Quick Start
@@ -155,6 +174,18 @@ ls ~/Downloads | grep -iE "^(screenshot|screen shot|capture)"
 
 # Numbered duplicates
 ls ~/Downloads | grep -E "\([0-9]+\)\."
+
+# Random alphanumeric strings (auto-generated filenames)
+ls ~/Downloads | grep -iE "^[A-Z0-9]{16,}\.[a-z]+$"
+
+# Numeric-only filenames (e.g., 65440.pdf)
+ls ~/Downloads | grep -E "^[0-9]+\.[a-z]+$"
+
+# Scan prefixes with timestamps
+ls ~/Downloads | grep -iE "^scan_.*[0-9]{4}-[0-9]{2}-[0-9]{2}"
+
+# Gmail exports
+ls ~/Downloads | grep -iE "^Gmail.*\.pdf$"
 ```
 
 ## Auto-Categorization by Type
@@ -200,6 +231,57 @@ echo "| $(date '+%H:%M') | MOVE | file.pdf | 0-Inbox | 2-Areas/Finance/ |" >> ~/
 4. **Preserve dates** - use `mv` (not cp+rm) to keep timestamps
 5. **Sensitive files** - flag anything in 2-Areas/{Finance,Health,Legal}
 
+## Security & Scam Detection
+
+Flag and quarantine potential scam/phishing files:
+
+```bash
+# Common scam patterns in PDFs (fake invoices, tech support scams)
+# Keywords to search: "Norton", "McAfee", "Microsoft Support",
+# "Your account", "Payment required", "Call immediately"
+
+# Check PDF content for scam indicators
+for f in ~/Downloads/*.pdf; do
+  if pdftotext "$f" - 2>/dev/null | grep -qiE "norton|mcafee|geek squad|call.*1-[0-9]{3}"; then
+    echo "⚠️  POTENTIAL SCAM: $f"
+    mv "$f" ~/Downloads/0-Inbox/_REVIEW/
+  fi
+done
+```
+
+**Scam indicators:**
+- Random alphanumeric filename (e.g., `U0BPA6IUWL6FUQRUHYCZ.pdf`)
+- Fake invoice from security software companies
+- "Call this number" with toll-free numbers
+- Urgent payment demands
+
+**Action:** Move to `_REVIEW` folder, flag for user, recommend DELETE
+
+## Sensitive Document Handling
+
+Flag and secure sensitive documents:
+
+```bash
+# Tax documents (W-2, 1099, tax returns)
+ls ~/Downloads | grep -iE "(w-2|w2|1099|tax.*(return|form))"
+
+# Documents with SSN patterns
+grep -l "[0-9]\{3\}-[0-9]\{2\}-[0-9]\{4\}" ~/Downloads/*.pdf 2>/dev/null
+
+# Financial statements
+ls ~/Downloads | grep -iE "(statement|account.*summary|routing.*number)"
+```
+
+**Sensitive file types:**
+| Type | Flag | Destination |
+|------|------|-------------|
+| W-2, 1099, Tax forms | ⚠️ SENSITIVE | 2-Areas/Finance/Tax/ |
+| Contracts with signatures | ⚠️ LEGAL | 2-Areas/Legal/ |
+| Medical records | ⚠️ HEALTH | 2-Areas/Health/ |
+| Password/credential files | ⚠️ SECURE | Encrypted storage |
+
+**Action:** Flag in categorization table, confirm with user before moving
+
 ## Duplicate Detection
 
 ```bash
@@ -230,6 +312,85 @@ If interrupted, check last operation:
 ```bash
 tail -5 ~/Downloads/_ORG/_LOG.md
 ```
+
+## Temp File Cleanup
+
+Remove common junk files before organizing:
+
+```bash
+# Office temp files (~$...)
+find ~/Downloads -name "~\$*" -delete
+
+# macOS metadata
+find ~/Downloads -name ".DS_Store" -delete
+find ~/Downloads -name "._*" -delete
+
+# Empty files
+find ~/Downloads -maxdepth 1 -type f -empty -delete
+```
+
+## PARA Root-Level Audit
+
+After initial organization, check for loose files at PARA folder roots:
+
+```bash
+# Files should be in subfolders, not at PARA root level
+echo "=== 2-Areas root files (should be in subfolders) ==="
+find ~/Downloads/2-Areas -maxdepth 1 -type f ! -name ".DS_Store"
+
+echo "=== 3-Resources root files ==="
+find ~/Downloads/3-Resources -maxdepth 1 -type f ! -name ".DS_Store"
+
+echo "=== 4-Archive root files ==="
+find ~/Downloads/4-Archive -maxdepth 1 -type f ! -name ".DS_Store"
+```
+
+## Empty Folder Cleanup
+
+After processing, remove empty staging folders:
+
+```bash
+# Remove empty review/staging folders
+rmdir ~/Downloads/0-Review 2>/dev/null
+rmdir ~/Downloads/0-Inbox/_REVIEW 2>/dev/null
+
+# Find and remove empty subdirectories
+find ~/Downloads -type d -empty -delete
+```
+
+## Categorization Table Format
+
+Present recommendations in a clear table before executing:
+
+```markdown
+### 🚫 DELETE (scam/junk)
+| File | Reason |
+|------|--------|
+| `U0BPA6...pdf` | SCAM - Fake Norton invoice |
+
+### ⚠️ SENSITIVE → 2-Areas/Finance
+| File | Content |
+|------|---------|
+| `65440.pdf` | W-2 Tax Form 2024 |
+
+### 📁 4-Archive
+| File | Suggested Rename |
+|------|------------------|
+| `old-project.pdf` | `2023-01_PROJ_project-name.pdf` |
+
+### 📚 3-Resources
+| File | Destination |
+|------|-------------|
+| `manual.pdf` | 3-Resources/Tools/ |
+```
+
+**Emoji flags:**
+- 🚫 DELETE - Scam, junk, or duplicate
+- ⚠️ SENSITIVE - Tax, legal, medical, credentials
+- 📁 ARCHIVE - Old/completed items
+- 📚 RESOURCES - Reference materials
+- 📂 AREAS - Ongoing responsibilities
+- 📝 PROJECTS - Active work
 
 ## Reference Files
 
